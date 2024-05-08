@@ -69,13 +69,19 @@ class Box extends THREE.Mesh{
     update(ground)
     {
         this.updateSides();
-
+        
         if (this.zAcceleration) this.velocity.z += 0.0003;
 
         this.position.x += this.velocity.x;
         this.position.z += this.velocity.z;
 
         this.applyGravity(ground);
+    }
+
+    ifCubeFallOutsideGround()
+    {
+        // return true if cube outside the ground
+        return this.left < -6 || this.right > 6 || this.front < -25 || this.back > 25;
     }
 
     applyGravity(ground)
@@ -219,6 +225,14 @@ function animate()
     }
 
     cube.update(ground);
+
+    // checking if main cube falls outside the ground
+    if (cube.ifCubeFallOutsideGround())
+    {
+        setTimeout(() => {
+            restart();
+        }, 1000);
+    }
     
     enemies.forEach((enemy) =>
     {
@@ -228,6 +242,7 @@ function animate()
         if (boxCollision({box1: cube, box2: enemy}))
         {
             cancelAnimationFrame(animationId);
+            restart();
         }
     });
 
@@ -264,6 +279,14 @@ function animate()
     }
 
     frames++;
+}
+
+document.getElementById("restart").addEventListener("click", restart);
+
+// restart the game
+function restart()
+{
+    window.location.reload();
 }
 
 // start game
